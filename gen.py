@@ -12,9 +12,9 @@ def load_ckp(checkpoint_fpath, model, optimizer):
     return model, optimizer, checkpoint["epoch"]
 
 
-if len(argv) < 5:
+if len(argv) < 8:
     print(
-        "Usage: python main.py <filename> <model-out-filename> <prompt-seq-length> <num-chars>"
+        "Usage: python main.py <filename> <model-output-filename-base> <seq-length> <num_chars> <hidden_size> <num_layers> <dropout>"
     )
     exit(1)
 
@@ -36,12 +36,42 @@ except FileNotFoundError:
     print("Model file not found")
     exit(1)
 
-seq_length = int(argv[3])
-num_chars = int(argv[4])
+# n_epochs = int(argv[4])
+# if n_epochs < 1:
+#    print("Number of epochs must be at least 1.")
+#    exit(1)
 
+# batch_size = int(argv[5])
+# if batch_size < 1:
+#    print("Batch size must be at least 1.")
+#    exit(1)
+
+seq_length = int(argv[3])
+if seq_length < 1:
+    print("Sequence length must be at least 1.")
+    exit(1)
+
+num_chars = int(argv[4])
 if num_chars < 1:
     print("Number of characters must be positive")
     exit(1)
+
+
+hidden_size = int(argv[5])
+if hidden_size < 1:
+    print("Hidden size must be at least 1.")
+    exit(1)
+
+num_layers = int(argv[6])
+if num_layers < 1:
+    print("Number of layers must be at least 1.")
+    exit(1)
+
+dropout = float(argv[7])
+if dropout < 0 or dropout >= 1:
+    print("Dropout must be between 0 and 1.")
+    exit(1)
+
 
 raw_text = open(filename, "r", encoding="utf-8").read()
 raw_text = raw_text.lower()
@@ -82,9 +112,14 @@ class CharModel(nn.Module):
     def __init__(self):
         super().__init__()
         self.lstm = nn.LSTM(
-            input_size=1, hidden_size=256, num_layers=3, batch_first=True, dropout=0.2
+            # input_size=1, hidden_size=256, num_layers=4, batch_first=True, dropout=0.1
+            input_size=1,
+            hidden_size=hidden_size,
+            num_layers=num_layers,
+            batch_first=True,
+            dropout=dropout,
         )
-        self.dropout = nn.Dropout(0.2)
+        self.dropout = nn.Dropout(0.1)
         self.linear = nn.Linear(256, n_vocab)
 
     def forward(self, x):

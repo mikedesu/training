@@ -2,6 +2,10 @@
 
 A simple pytorch script to train any text generation model.
 
+## Attribution
+
+A lot of this code was pulled from: [https://machinelearningmastery.com/text-generation-with-lstm-in-pytorch/](https://machinelearningmastery.com/text-generation-with-lstm-in-pytorch/)
+
 ## Requirements
 
 ```

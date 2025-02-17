@@ -4,3 +4,4 @@ checkpoints
 checkpoints/*
 texts
 texts/*
+*.pth
